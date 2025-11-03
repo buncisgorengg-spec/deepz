@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kuis Ketenagakerjaan</title>
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #f8f9fa, #d7e1ec);
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+  }
+  h1 {
+    color: #2b2b2b;
+    text-shadow: 1px 1px 2px #999;
+  }
+  .question {
+    background: white;
+    margin: 20px auto;
+    padding: 15px;
+    border-radius: 12px;
+    max-width: 600px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    text-align: left;
+  }
+  .option {
+    display: block;
+    margin: 8px 0;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .option:hover {
+    background: #f1f1f1;
+  }
+  button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  button:hover {
+    background: #0056b3;
+    transform: scale(1.05);
+  }
+  #result {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-top: 25px;
+  }
+</style>
+</head>
+<body>
+
+<h1>🎓 Kuis Ketenagakerjaan 🎓</h1>
+
+<div id="quiz"></div>
+<button onclick="checkAnswers()">Lihat Hasil</button>
+<div id="result"></div>
+
+<script>
+// ====== DATA SOAL ======
+const questions = [
+  {
+    q: "1. Apa yang dimaksud dengan tenaga kerja?",
+    options: [
+      "Penduduk yang belum bekerja sama sekali",
+      "Penduduk yang sedang mencari pekerjaan",
+      "Penduduk yang mampu bekerja untuk menghasilkan barang dan jasa",
+      "Penduduk yang tidak mampu bekerja karena usia"
+    ],
+    answer: 2
+  },
+  {
+    q: "2. Faktor yang memengaruhi besar kecilnya upah antara lain adalah...",
+    options: [
+      "Jumlah anak dan hobi pekerja",
+      "Tingkat pendidikan dan produktivitas kerja",
+      "Jenis kelamin pekerja",
+      "Lama perusahaan berdiri"
+    ],
+    answer: 1
+  },
+  {
+    q: "3. Pengangguran struktural terjadi karena...",
+    options: [
+      "Peralihan pekerjaan dari satu tempat ke tempat lain",
+      "Adanya perubahan struktur ekonomi atau teknologi",
+      "Pekerjaan yang bersifat musiman",
+      "Tidak adanya lowongan pekerjaan baru"
+    ],
+    answer: 1
+  },
+  {
+    q: "4. Fungsi utama upah bagi pekerja adalah...",
+    options: [
+      "Sebagai hukuman karena bekerja",
+      "Sebagai motivasi kerja dan alat distribusi pendapatan",
+      "Sebagai pajak bagi pemerintah",
+      "Sebagai alat tukar antar perusahaan"
+    ],
+    answer: 1
+  },
+  {
+    q: "5. Salah satu upaya pemerintah untuk mengatasi pengangguran adalah...",
+    options: [
+      "Membatasi pendidikan masyarakat",
+      "Menghapus pelatihan kerja",
+      "Meningkatkan keterampilan tenaga kerja melalui pelatihan",
+      "Mengurangi investasi asing"
+    ],
+    answer: 2
+  }
+];
+
+// ====== TAMPILKAN SOAL ======
+const quizContainer = document.getElementById("quiz");
+questions.forEach((q, i) => {
+  const div = document.createElement("div");
+  div.classList.add("question");
+  div.innerHTML = `<p><b>${q.q}</b></p>`;
+  
+  const abcd = ["A", "B", "C", "D"];
+  q.options.forEach((opt, idx) => {
+    div.innerHTML += `
+      <label class="option">
+        <input type="radio" name="q${i}" value="${idx}" onclick="playClickSound()">
+        <b>${abcd[idx]}.</b> ${opt}
+      </label>
+    `;
+  });
+  
+  quizContainer.appendChild(div);
+});
+
+// ====== SUARA “TING” DARI JAVASCRIPT ======
+function playClickSound() {
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.connect(g);
+  g.connect(ctx.destination);
+  o.type = "sine";
+  o.frequency.setValueAtTime(880, ctx.currentTime); // nada tinggi (A5)
+  g.gain.setValueAtTime(0.2, ctx.currentTime);
+  o.start();
+  o.stop(ctx.currentTime + 0.15); // durasi 150ms
+}
+
+// ====== SUARA KEMENANGAN (APPLAUSE) ======
+const winSound = new Audio("https://actions.google.com/sounds/v1/crowds/applause.ogg");
+
+// ====== CEK HASIL ======
+function checkAnswers() {
+  let score = 0;
+  questions.forEach((q, i) => {
+    const answer = document.querySelector(`input[name="q${i}"]:checked`);
+    if (answer && parseInt(answer.value) === q.answer) score++;
+  });
+
+  const result = document.getElementById("result");
+  let text = "";
+  switch(score) {
+    case 0: text = "Goblok 😭"; break;
+    case 1: text = "Alamak najissnya 😣"; break;
+    case 2: text = "Dongo 😅"; break;
+    case 3: text = "IQ Jongkok 😆"; break;
+    case 4: text = "Hoki 😏"; break;
+    case 5: text = "Baguss ganteng/cantikk 😋❤️😍😘🥰🤩"; winSound.play(); break;
+  }
+
+  result.innerHTML = `Nilai kamu: ${score}/5<br>${text}`;
+}
+</script>
+
+</body>
+</html>
